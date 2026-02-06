@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot de Seguridad</title>
+</head>
+<body>
+    <h2>🦺 Chatbot de Seguridad</h2>
+
+    <div id="messages"></div>
+
+    <input id="input" placeholder="Escribe tu consulta">
+    <button onclick="enviar()">Enviar</button>
+
+<script>
+async function enviar() {
+    const input = document.getElementById("input");
+    const texto = input.value;
+
+    document.getElementById("messages").innerHTML +=
+        `<p><b>Usuario:</b> ${texto}</p>`;
+
+    const res = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({mensaje: texto})
+    });
+
+    const data = await res.json();
+
+    document.getElementById("messages").innerHTML +=
+        `<p><b>Chatbot:</b> ${data.respuesta}</p>`;
+
+    input.value = "";
+}
+</script>
+</body>
+</html>

@@ -7,7 +7,6 @@
 
   <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
-
     body {
       margin: 0;
       background: #eef1f5;
@@ -17,7 +16,6 @@
       min-height: 100vh;
       padding: 16px;
     }
-
     .chat-container {
       width: 100%;
       max-width: 520px;
@@ -30,7 +28,6 @@
       overflow: hidden;
       border: 1px solid rgba(0,0,0,0.06);
     }
-
     .chat-header {
       background: #1f3a5f;
       color: white;
@@ -39,7 +36,6 @@
       align-items: center;
       gap: 10px;
     }
-
     .badge {
       width: 34px;
       height: 34px;
@@ -49,28 +45,16 @@
       background: rgba(255,255,255,0.12);
       font-size: 18px;
     }
-
-    .title {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-    }
-
+    .title { display: flex; flex-direction: column; line-height: 1.1; }
     .title strong { font-size: 16px; letter-spacing: 0.2px; }
     .title small { opacity: 0.85; font-size: 12px; margin-top: 4px; }
-
     .chat-messages {
       flex: 1;
       padding: 16px;
       overflow-y: auto;
       background: #f7f9fc;
     }
-
-    .message-row {
-      display: flex;
-      margin-bottom: 12px;
-    }
-
+    .message-row { display: flex; margin-bottom: 12px; }
     .message {
       max-width: 82%;
       padding: 10px 12px;
@@ -80,28 +64,18 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
-
     .user-row { justify-content: flex-end; }
     .bot-row { justify-content: flex-start; }
-
     .user-msg {
       background: #1f3a5f;
       color: white;
       border-bottom-right-radius: 6px;
     }
-
     .bot-msg {
       background: #e4e8ee;
       color: #222;
       border-bottom-left-radius: 6px;
     }
-
-    .meta {
-      font-size: 11px;
-      opacity: 0.65;
-      margin-top: 6px;
-    }
-
     .typing {
       display: inline-flex;
       align-items: center;
@@ -109,30 +83,30 @@
       font-size: 12px;
       opacity: 0.75;
       margin: 6px 0 12px;
+      padding-left: 2px;
     }
-
-    .dots {
-      display: inline-flex;
-      gap: 4px;
-    }
-
+    .dots { display: inline-flex; gap: 4px; }
     .dot {
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: #1f3a5f;
       opacity: 0.35;
       animation: blink 1.2s infinite;
     }
-
     .dot:nth-child(2) { animation-delay: 0.15s; }
     .dot:nth-child(3) { animation-delay: 0.3s; }
-
     @keyframes blink {
       0%, 100% { opacity: 0.25; transform: translateY(0); }
       50% { opacity: 0.9; transform: translateY(-2px); }
     }
-
+    .hint {
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #425466;
+      background: #f1f4fa;
+      border-top: 1px solid #e5e8ef;
+    }
+    .hint b { color: #1f3a5f; }
     .chat-input {
       padding: 12px;
       background: white;
@@ -141,7 +115,6 @@
       gap: 10px;
       align-items: center;
     }
-
     .chat-input input {
       flex: 1;
       padding: 11px 12px;
@@ -151,12 +124,10 @@
       font-size: 14px;
       background: #fbfcfe;
     }
-
     .chat-input input:focus {
       border-color: #1f3a5f;
       box-shadow: 0 0 0 3px rgba(31,58,95,0.15);
     }
-
     .chat-input button {
       padding: 11px 16px;
       border-radius: 999px;
@@ -168,19 +139,8 @@
       transition: transform 0.06s ease, opacity 0.2s ease;
       white-space: nowrap;
     }
-
     .chat-input button:active { transform: scale(0.98); }
     .chat-input button:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .hint {
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #425466;
-      background: #f1f4fa;
-      border-top: 1px solid #e5e8ef;
-    }
-
-    .hint b { color: #1f3a5f; }
   </style>
 </head>
 
@@ -197,7 +157,7 @@
     <div class="chat-messages" id="messages"></div>
 
     <div class="hint">
-      Ejemplos: <b>EPP para trabajos en altura</b>, <b>IPERC base vs continuo</b>, <b>procedimiento seguro</b>.
+      Ejemplos: <b>EPP para trabajos en altura</b>, <b>IPERC base vs continuo</b>, <b>PETAR</b>, <b>PETs</b>.
     </div>
 
     <div class="chat-input">
@@ -207,17 +167,15 @@
   </div>
 
   <script>
-    // ✅ URL real de tu backend Render
-    const API_URL = "https://chatbot-web-2dg6.onrender.com/chat";
+    // ✅ MISMO DOMINIO (Render sirve la web), así evitas CORS y no dependes de GitHub Pages
+    const API_URL = "/chat";
 
     const messagesEl = document.getElementById("messages");
     const inputEl = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
 
-    // Mensaje inicial del bot
     addBotMessage("Hola, soy tu asistente de seguridad. ¿Qué consulta SST tienes hoy?");
 
-    // Enviar con Enter (sin Shift)
     inputEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -225,9 +183,7 @@
       }
     });
 
-    function scrollToBottom() {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+    function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
 
     function addMessage(text, who) {
       const row = document.createElement("div");
@@ -242,28 +198,19 @@
       scrollToBottom();
     }
 
-    function addBotMessage(text) {
-      addMessage(text, "bot");
-    }
-
-    function addUserMessage(text) {
-      addMessage(text, "user");
-    }
+    function addBotMessage(text) { addMessage(text, "bot"); }
+    function addUserMessage(text) { addMessage(text, "user"); }
 
     function addTyping() {
       const wrap = document.createElement("div");
       wrap.id = "typingWrap";
       wrap.className = "typing";
-
       wrap.innerHTML = `
         <span>El bot está escribiendo</span>
         <span class="dots">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         </span>
       `;
-
       messagesEl.appendChild(wrap);
       scrollToBottom();
     }
@@ -273,20 +220,10 @@
       if (el) el.remove();
     }
 
-    function setLoading(isLoading) {
-      sendBtn.disabled = isLoading;
-      inputEl.disabled = isLoading;
-      sendBtn.textContent = isLoading ? "Enviando..." : "Enviar";
-    }
-
-    function friendlyErrorMessage(status, rawText) {
-      // Render gratis suele “dormir”: primeros segundos puede tardar
-      if (status === 502 || status === 503 || status === 504) {
-        return "El servidor está despertando (Render free). Espera 10–20s y vuelve a intentar.";
-      }
-      if (status === 404) return "No encontré el endpoint. Verifica que la URL termine en /chat.";
-      if (status === 400) return "Solicitud inválida. Revisa el formato que se envía al servidor.";
-      return "Error del servidor (" + status + "): " + (rawText || "sin detalle");
+    function setLoading(v) {
+      sendBtn.disabled = v;
+      inputEl.disabled = v;
+      sendBtn.textContent = v ? "Enviando..." : "Enviar";
     }
 
     async function sendMessage() {
@@ -303,29 +240,25 @@
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          // ✅ Tu backend FastAPI espera { "message": "..." }
-          body: JSON.stringify({ message: text })
+          // ✅ IMPORTANTE: tu backend espera "mensaje"
+          body: JSON.stringify({ mensaje: text })
         });
 
-        // Si la respuesta no es 200, mostrar error legible
         if (!res.ok) {
-          const rawText = await res.text().catch(() => "");
+          const raw = await res.text().catch(() => "");
           removeTyping();
-          addBotMessage(friendlyErrorMessage(res.status, rawText));
-          setLoading(false);
+          addBotMessage("Error del servidor (" + res.status + "): " + (raw || "sin detalle"));
           return;
         }
 
         const data = await res.json();
         removeTyping();
 
-        // ✅ Tu backend responde { "response": "..." }
-        const botText = (data && data.response) ? data.response : "No recibí respuesta del servidor.";
-        addBotMessage(botText);
-
+        // ✅ IMPORTANTE: tu backend responde "respuesta"
+        addBotMessage(data?.respuesta ?? "No recibí respuesta del servidor.");
       } catch (err) {
         removeTyping();
-        addBotMessage("No pude conectar con el servidor. Revisa tu conexión o si Render está activo.");
+        addBotMessage("No pude conectar con el servidor. Intenta otra vez (Render puede estar despertando).");
         console.error(err);
       } finally {
         setLoading(false);
@@ -335,4 +268,3 @@
   </script>
 </body>
 </html>
-

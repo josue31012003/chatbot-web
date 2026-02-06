@@ -1,38 +1,62 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Chatbot de Seguridad</title>
-</head>
-<body>
-    <h2>🦺 Chatbot de Seguridad</h2>
-
-    <div id="messages"></div>
-
-    <input id="input" placeholder="Escribe tu consulta">
-    <button onclick="enviar()">Enviar</button>
-
 <script>
-async function enviar() {
-    const input = document.getElementById("input");
-    const texto = input.value;
+const API_URL = "https://chatbot-web-2dg6.onrender.com/chat";
 
-    document.getElementById("messages").innerHTML +=
-        `<p><b>Usuario:</b> ${texto}</p>`;
+function addMessage(text, className) {
+  const messages = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.className = "message " + className;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
 
-    const res = await fetch("/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({mensaje: texto})
+function addTyping() {
+  const messages = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.id = "typing";
+  div.className = "typing";
+  div.textContent = "El bot está escribiendo...";
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function removeTyping() {
+  const typing = document.getElementById("typing");
+  if (typing) typing.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+
+  addTyping();
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
     });
 
-    const data = await res.json();
+    // Si el backend devuelve error HTTP, mostramos algo útil
+    if (!response.ok) {
+      const errText = await response.text();
+      removeTyping();
+      addMessage("Error del servidor: " + errText, "bot");
+      return;
+    }
 
-    document.getElementById("messages").innerHTML +=
-        `<p><b>Chatbot:</b> ${data.respuesta}</p>`;
-
-    input.value = "";
+    const data = await response.json();
+    removeTyping();
+    addMessage(data.response ?? "No recibí respuesta del servidor.", "bot");
+  } catch (error) {
+    removeTyping();
+    addMessage("Error al conectar con el servidor.", "bot");
+    console.error(error);
+  }
 }
 </script>
-</body>
-</html>
